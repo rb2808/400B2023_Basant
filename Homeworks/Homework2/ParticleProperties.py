@@ -64,7 +64,7 @@ def ParticleInfo(file_name, par_type, particle_number):
     par_no = particle_number - 1
     # This variable converts the particle number into the appropriate index for the data file and then stores it.
     
-    distance_to_object = np.round((np.sqrt((x[par_no]**2) + (y[par_no**2]) + (z[par_no]**2))), 3) * u.kpc
+    distance_to_object = np.round((np.sqrt((x[par_no]**2) + (y[par_no]**2) + (z[par_no]**2))), 3) * u.kpc
     # Calculates the total 3-D distance of the given particle by adding the squares of distances in x, y, and z and 
     # then taking the square root. It then stores it as in units of kpc using astropy. It is roundedto 3 decimal 
     # places. 
