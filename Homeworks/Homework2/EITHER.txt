@@ -1,0 +1,5 @@
+# This file stores my answers to question 5, Homework 2. 
+
+The distance to the selected object is:  4.973e+00 kpc or  1.622e+04 lyr
+The speed of the selected object is:  3.121e+02 km / s
+The mass of the selected object is:  1.000e+06 solMass
