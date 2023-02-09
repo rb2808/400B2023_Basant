@@ -274,14 +274,18 @@ if __name__ == '__main__' :
     print('This is fincal COMV (M 33):',M33_COM_v, '; Magnitude:', np.round(np.sqrt(np.dot(M33_COM_v, M33_COM_v)), 3))
     
     # Distance and Velocity for MW and M31
-    dmwm31 = np.round(np.sqrt(np.dot(np.abs(MW_COM_p - M31_COM_p), np.abs(MW_COM_p - M31_COM_p))), 3)
+    dmwm31 = np.round(np.sqrt(np.dot(np.abs(MW_COM_p - M31_COM_p), np.abs(MW_COM_p - M31_COM_p))), 3) 
+    # This is the distance between both galaxies. 
     vmwm31 = np.round(np.sqrt(np.dot(np.abs(MW_COM_v - M31_COM_v), np.abs(MW_COM_v - M31_COM_v))), 3)
+    # This is the relative velocity between the two galaxies. 
     print('Separation between MW and M31:', dmwm31)
     print('Relative Velocity between MW and M31:', vmwm31)
     
     
     # Distance and Velocity for MW and M31
     dm33m31 = np.round(np.sqrt(np.dot(np.abs(M33_COM_p - M31_COM_p), np.abs(M33_COM_p - M31_COM_p))), 3)
+    # This is the distance between both galaxies. 
     vm33m31 = np.round(np.sqrt(np.dot(np.abs(M33_COM_v - M31_COM_v), np.abs(M33_COM_v - M31_COM_v))), 3)
+    # This is the relative velocity between the two galaxies. 
     print('Separation between M33 and M31:', dm33m31)
     print('Relative Velocity between M33 and M31:', vm33m31)
