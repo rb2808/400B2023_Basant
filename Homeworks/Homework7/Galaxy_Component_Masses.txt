@@ -1,0 +1,5 @@
+Galaxy_Name    Halo_Mass(1e+12 solMass)    Disk_Mass(1e+12 solMass)    Bulge_Mass(1e+12 solMass)    Total_Mass(1e+12 solMass)    f_bar
+MW    1.975    0.075    0.01    2.06    0.041
+M31    1.921    0.12    0.019    2.06    0.067
+M33    0.187    0.009    0.0    0.196    0.046
+LG    4.083    0.204    0.029    4.316    0.054
