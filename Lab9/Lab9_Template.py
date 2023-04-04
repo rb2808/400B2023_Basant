@@ -506,6 +506,7 @@ if __name__ == '__main__':
     ax.plot(M33SimOrbit['t'], M31_M33_SimV, 'r', lw=5, label='M31-M33 Simulation')
 
     ###### Plot the new orbit with DF 
+    ax.plot(M33Orbit['t'], M31_M33_R, 'g', lw = 5, linestyle = '--', label = 'M31-M33 with DF')
 
 
     # Add axis labels
