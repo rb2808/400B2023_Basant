@@ -1,12 +1,4 @@
 
-# # Lab 9 Dynamical Friction
-# 
-# Starting from the Homework 7 Solutions, add Dynamical Friction to better match the simulation data. 
-# 
-# 
-
-
-
 # import necessary modules
 # numpy provides powerful multi-dimensional arrays to hold and manipulate data
 import numpy as np
@@ -105,16 +97,17 @@ class M33AnalyticOrbit:
      
         
         ### ADD M33 HALO MASS HERE #### 
+        self.M33halo = ComponentMass('M33_000.txt', 1)*1e12
     
-        self.M33halo = ComponentMass("M33_000.txt", 1)*1e12 # Halo mass in Msun. 
     
         ### ADD M31 CIRCULAR SPEED HERE ### 
+        self.Vc = 180
+
         
-        self.Vc = 180 # Circular speed in km/s (M31 halo Vcirc from HW 5)
-        
-        ### Fudge factor ## 
+        ### Fudge factor ##
+        self.fudge = 0.65
     
-        
+    
     
     
     def HernquistAccel(self, M, r_a, r):
@@ -187,44 +180,40 @@ class M33AnalyticOrbit:
      
     
     ########### ADD Dynamical Friction Method Here ##################
-
     def DynamicalFriction(self, Msat, Vc, r, v):
         '''
-        This is a method that returns the deaccelration from the dynamical friction. 
+        Method that returns the deceleration from dynamical friction
+        a = -0.428 G Msat ln(Lambda) / rmag^2 * v/vmag
         
-        a = -0.428 G Msat ln(Lambda) rmag^2 v/vmag
-
-        Parameters
-        ----------
-        Msat : 'float'
-            Mass of the satellite (M33) in MSun. 
-        Vc : 'flaot'
-            This is the max circular velocity of the host (M31) dark matter halo in km/s.
-        r : 'np.ndarray'
-            Position vector of the satellite relative to the host (M33) in kpc. 
-        v : 'np.ndarray'
-            This is the velocity vector of the satellite relative to the host (vM33 - vM3) in km/s.
-
-        Returns
-        -------
+        INPUT
+        -----
+        Msat: 'float'
+            Mass of the satellite (M33) in Msun
         
-        DF: 'np.ndarray'
-            Decelartion vector owing to dynamical friction. 
+        Vc: 'float' 
+            Max circular velocity of the host's (M31) dark matter halo (km/s) 
 
+        r: 'np.array'
+            Position vector of the satellite relative to the host (rM33-rM31) in kpc
+        
+        v: 'np.array'
+            Velocity vector of the satellite relative to the host (rM33-rM31) in km/s
+        
+        OUTPUT
+        ------
+        DF: 'np.array'
+            Deceleration vector owing to the Dyanmical Friction (km/s^2)
         '''
-        
-        r_mag = np.sqrt(r[0]**2 + r[1]**2 + r[2]**2) # magnitude of the position vector.
-         
-        v_mag = np.sqrt(v[0]**2 + v[1]**2 + v[2]**2) # magnitude of the velocity vector. 
-        
-        bmax = r_mag # current separtion between M33 and M31. 
-        
-        bmin = self.G * Msat / Vc**2 # GMsat / Vc**2
-        
+
+        r_mag = np.sqrt(r[0]**2 + r[1]**2 + r[2]**2) # magnitude of position vector
+        v_mag = np.sqrt(v[0]**2 + v[1]**2 + v[2]**2) # magnitude of velocity vector
+
+        bmax = r_mag # current separation between M33 and M31
+        bmin = self.G*Msat/Vc**2 # G Msat / Vc**2
+
         Coulomb = np.log(bmax/bmin)
-        
-        DF = -0.428 * self.G * Msat * Coulomb / r_mag**2*v/v_mag
-        
+
+        DF = -0.428*self.G*Msat*Coulomb/r_mag**2*v/v_mag
         return DF
         
         
@@ -237,9 +226,8 @@ class M33AnalyticOrbit:
         ----------
         r : `np.ndarray`
             Position vector to find the acceleration at
-            
-        v: 'np.ndarray'
-            Velocity vector for the DF calculation in km/s. 
+        
+        v : 'np.ndarray'
 
         RETURNS
         -------
@@ -253,9 +241,7 @@ class M33AnalyticOrbit:
         adisk = self.MiyamotoNagaiAccel(self.Mdisk, self.rdisk, r)
     
         ###### ADD DYNAMICAL FRICTION HERE and include in "a"
-        
-        aDF = self.DynamicalFriction(self.M33halo, self.Vc, r, v)
-
+        aDF = self.DynamicalFriction(self.M33halo, self.Vc, r, v)*self.fudge
         a = ahalo+abulge+adisk+aDF
         
         return a # return the total acceleration
@@ -352,9 +338,6 @@ class M33AnalyticOrbit:
         np.savetxt(self.filename, orbit, fmt = "%11.3f"*7, comments='#', 
                    header="{:>10s}{:>11s}{:>11s}{:>11s}{:>11s}{:>11s}{:>11s}"\
                    .format('t', 'x', 'y', 'z', 'vx', 'vy', 'vz'))
-        
-
-
 
 
 # ------------------ FUNCTIONS -------------------# 
@@ -409,9 +392,6 @@ def vector_mag(orbit):
                       
     return pos, vel
 
-
-
-
 # ------------------- MAIN ---------------------- #
 if __name__ == '__main__':
 
@@ -422,22 +402,22 @@ if __name__ == '__main__':
     # Compute the orbit
     M33.OrbitIntegration(0, 0.1, 10.)
 
-
-    # With DF 
+    
+   # With DF 
 
     # Read in Orbit of M33 relative to M31 that we computed using LeapFrog 
     M33Orbit = np.loadtxt("M33AnalyticOrbit_withDF.txt", dtype=orbit_type)
-
+    M33OrbitFudge = np.loadtxt("M33AnalyticOrbit_withDF_andFudge.txt", dtype=orbit_type)
+    
     #Determine the magnitude of the position and velocities of 
     # the galaxies at each point in the orbit
-    M31_M33_R, M31_M33_V = vector_mag(M33Orbit)
-
+    M31_M33_R, M31_M33_V = vector_mag(M33OrbitFudge)
 
     # No DF 
-
+    
     # Read in Orbit of M33 relative to M31 Old, from Homework 7
     M33Orbit_Hmwk7 = np.loadtxt("M33AnalyticOrbit_Hmwk7.txt", dtype=orbit_type)
-
+    
     #Determine the magnitude of the position and velocities of 
     # of MW and M31 : Homework 7 
     M31_M33_R_Hmwk7, M31_M33_V_Hmwk7 = vector_mag(M33Orbit_Hmwk7)
@@ -450,46 +430,48 @@ if __name__ == '__main__':
     # Read in simulation Orbit from Homework 6
     M33SimOrbit = np.genfromtxt('Orbit_M33.txt', dtype = orbit_type)
     M31SimOrbit = np.genfromtxt('Orbit_M31.txt', dtype = orbit_type)
-
+    
     #Determine the magnitude of the position and velocities of 
     # the galaxies at each point in the orbit
     M31_M33_SimR, M31_M33_SimV = relative_mag(M31SimOrbit, M33SimOrbit)
 
 
 
-
     # Plot the orbital separations of the galaxies 
     #################################
-
+    
     fig, ax= plt.subplots(figsize=(12, 10))
-
+    
     # Plot the analytical separation of M31 and M33 from Homework 7
     ax.plot(M33Orbit_Hmwk7['t'], M31_M33_R_Hmwk7, 'b', lw=5, linestyle=":", label='M31-M33 No DF')
-
+    
     # Plot the simulated separation of M31 and M33
     ax.plot(M33SimOrbit['t'], M31_M33_SimR, 'r', lw=5, label='M31-M33 Simulation')
-
+    
     #### Plot the newly computed orbit with DF
-
-
-
+    ax.plot(M33Orbit['t'], M31_M33_R, 'g', lw=5, linestyle='--', label='M31-M33 with DF')
+    ax.plot(M33OrbitFudge['t'], M31_M33_R, 'g', lw=5, linestyle='--', label='M31-M33 with DF and Fudge')
+    
+    
+    
+    
     # Add axis labels
     ax.set_xlabel('Time (Gyr)', fontsize=22)
     ax.set_ylabel('Separation (kpc)', fontsize=22)
     ax.set_title("Separations vs. Time", fontsize=22)
-
+    
     #adjust tick label font size
     ax.xaxis.set_tick_params(labelsize=22)
     ax.yaxis.set_tick_params(labelsize=22)
-
+    
     # add a legend with some customizations.
     legend = ax.legend(loc='upper left',fontsize=20)
-
+    
     # tight layout
     fig.tight_layout()
-
+    
     # Save to a file
-    fig.savefig('orbit_M33_R_withDF.png')
+    fig.savefig('orbit_M33_R_withDF_andFudge.png')
 
 
 
@@ -506,7 +488,6 @@ if __name__ == '__main__':
     ax.plot(M33SimOrbit['t'], M31_M33_SimV, 'r', lw=5, label='M31-M33 Simulation')
 
     ###### Plot the new orbit with DF 
-    ax.plot(M33Orbit['t'], M31_M33_R, 'g', lw = 5, linestyle = '--', label = 'M31-M33 with DF')
 
 
     # Add axis labels
@@ -529,8 +510,3 @@ if __name__ == '__main__':
 
 
     # # 6. What other reasons might there be for why the orbits don't match?
-
-
-
-
-
