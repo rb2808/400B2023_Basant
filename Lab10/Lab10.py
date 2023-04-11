@@ -315,7 +315,8 @@ if __name__ == '__main__':
     label_size = 22
     matplotlib.rcParams['xtick.labelsize'] = label_size 
     matplotlib.rcParams['ytick.labelsize'] = label_size
-
+    
+    plt.vlines(1,0,1,linestyle = '-')
 
     legend = ax.legend(loc='upper center', fontsize='x-large', 
                        bbox_to_anchor=(0.5, 1.05),ncol=3, fancybox=True, shadow=True)
@@ -330,7 +331,11 @@ if __name__ == '__main__':
     # 
     # 
     # 
-
+    idx = np.where(OmegaR_z > OmegaM_z)
+    
+    zRad = zrange[idx[0][0]]
+    
+    print(zRad)
 
 
 
@@ -338,6 +343,12 @@ if __name__ == '__main__':
 
     #  At what approximate redshift does Dark Energy dominate?   
     # 
+
+    idx1 = np.where(OmegaL_z > OmegaR_z)
+    
+    zdAR = zrange[idx1[0][0]]
+    
+    print(zdAR)
 
 
 
