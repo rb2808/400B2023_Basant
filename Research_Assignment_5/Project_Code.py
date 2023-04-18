@@ -1,6 +1,20 @@
 ### Course: ASTR 400 B Semester Project
 ### Author: Ritvik Basant
-
+### Goals: This code is designed to calculate the evolution of Spin Angular Momentum of a galaxy. 
+### It uses the galaxy merger simulation data files (given by Prof. Besla). Now, each of the numerical simulation
+### of the galaxy uses three types of particles - bulge, halo, and disk. Suppose that we want to calculate the 
+### spin of the halo particles. In order to do so, we put in the particle type 1. Then, this code will first select
+### the data from the simulation files (x,y,z,vx,vy,vz) for the given particle type. Then, the code will calculate 
+### the angular momentum of each particle by multiplying the mass of the particle with a space coordinate and a 
+### velocity component. For eg, the x of component of angular momentum L_x = m*v_x*x. The code then stores the 
+### angular momentum of each particle in three different arrays -- each individual array storing the angular 
+### momentum in each direction -- x,y,z. In the end, then code sums up all the elements in the L_i array and 
+### divides it by total mass of the particles. Thus, by the code completely runs, it gives us three quantities -- 
+### SAM_x, SAM_y, and SAM_z at a given time, where SAM stands for Spin angular (avg) momentum.  
+### This whole loop is then iterated for all the 800 files for each galaxy simulation. The evolution of SAM in all
+### three directions is stored in form of txt files. Once these files are computed, the code then re-reads them and 
+### plots the SAM x, y, z for all three galaxies as a function of time. I have also changed the particle type to 2
+### to calculate how the disk angular momentum evolves during a merger.
 
 # Importing Libraries and other essential modules.
 import numpy as np
@@ -103,6 +117,10 @@ def SAM_evolution(galaxy):
                header="{:>11s}{:>11s}{:>11s}{:>11s}"\
                       .format('T (Gyrs)', 'Lx', 'Ly', 'Lz'))
 
+### Uncomment this part if you want to generate the SAM evolution files. If this happens to be the case
+### then please include the simulation files in the same directory and change the location in above
+### lines accordingly. 
+
 #d1 = SAM_evolution('M33')
 #d2 = SAM_evolution('M31')
 #d3 = SAM_evolution('MW')
@@ -157,42 +175,54 @@ def Read(filename):
     return data
     
 
+# Reading Angular momentum files created above to plot the evolution of SAM for MW. 
 d = Read("MW_Angular_Momentum.txt")
+# Lx tells the direction and mw tells the galaxy. Same thing holds for following variables.
 Lxmw = []
 Lymw = []
 Lzmw = []
+# Stores time. 
 t = []
 
+# This for loops converts the data from the txt files into data arrays.
 for i in range(len(d)):
     t.append(d[i][0])
     Lxmw.append(d[i][1])
     Lymw.append(d[i][2])
     Lzmw.append(d[i][3])
 
+# Reading Angular momentum files created above to plot the evolution of SAM for M33. 
 d1 = Read("M33_Angular_Momentum.txt")
 Lxm33 = []
 Lym33 = []
 Lzm33 = []
 
+# This for loops converts the data from the txt files into data arrays.
 for i in range(len(d1)):
     Lxm33.append(d1[i][1])
     Lym33.append(d1[i][2])
     Lzm33.append(d1[i][3])
 
+# Reading Angular momentum files created above to plot the evolution of SAM for M31. 
 d2 = Read("M31_Angular_Momentum.txt")
 Lxm31 = []
 Lym31 = []
 Lzm31 = []
 
+# This for loops converts the data from the txt files into data arrays.
 for i in range(len(d2)):
     Lxm31.append(d2[i][1])
     Lym31.append(d2[i][2])
     Lzm31.append(d2[i][3])
 
 
+# Plotting the x axis.
 yax_x = [min(t), max(t)]
 yax_y = [0, 0]
     
+
+# plotting the evolution of SAM for every galaxy. 
+
 fig, axs = plt.subplots(3, figsize = (18, 12))
 fig.suptitle('Specific Angular Momentum - X Direction', fontsize = 35)
 axs[0].set_ylabel('MW [kpc-km-$s^{-1}$]', fontsize = 20)
@@ -259,8 +289,6 @@ axs[1].plot(ly3time, m31ly, color = 'm', linewidth = 2)
 axs[2].plot(ly1time, m33ly, color = 'm', linewidth = 2)
 axs[2].plot(ly2time, m33ly, color = 'm', linewidth = 2)
 axs[2].plot(ly3time, m33ly, color = 'm', linewidth = 2)
-
-
 
 fig, axs = plt.subplots(3, figsize = (18, 12))
 fig.suptitle('Specific Angular Momentum - Z Direction', fontsize = 35)
